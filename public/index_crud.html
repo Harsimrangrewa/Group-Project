@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <title>Users App</title>
+
+  <style>
+    /* Basic page styling */
+    body {
+      font-family: Arial;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+
+    main {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    section {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    input {
+      padding: 10px;
+      margin-right: 10px;
+    }
+
+    button {
+      padding: 10px 15px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    li {
+      margin-bottom: 10px;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <main>
+
+    <section>
+
+      <h1>User Dashboard</h1>
+
+      <!-- Input where user types a name -->
+      <input
+        type="text"
+        id="nameInput"
+        placeholder="Enter name"
+      />
+
+      <!-- Button to add a new user -->
+      <button id="addBtn">
+        Add User
+      </button>
+
+      <!-- Status messages (loading / errors) -->
+      <p id="status"></p>
+
+      <!-- List where users will be displayed -->
+      <ul id="users"></ul>
+
+    </section>
+
+  </main>
+
+  <script>
+
+    // =========================
+    // LOAD USERS FROM BACKEND
+    // =========================
+
+    async function loadUsers() {
+
+      // Send GET request to backend (/users)
+      const response = await fetch("/users");
+
+      // Convert response into JavaScript object (array of users)
+      const users = await response.json();
+
+      // Get the <ul> element from the page
+      const usersList = document.getElementById("users");
+
+      // Clear previous list before adding new data
+      usersList.innerHTML = "";
+
+      // Loop through all users returned by backend
+      users.forEach(user => {
+
+        // Create a new <li> element for each user
+        const li = document.createElement("li");
+
+        // Set text inside the <li>
+        li.textContent = user.name;
+
+        // Add <li> to the <ul>
+        usersList.appendChild(li);
+
+      });
+    }
+
+
+    // =========================
+    // ADD NEW USER TO BACKEND
+    // =========================
+
+    async function addUser() {
+
+      // Get input element
+      const input = document.getElementById("nameInput");
+
+      // Extract value typed by user
+      const name = input.value;
+
+      // If input is empty, stop function
+      if (!name) {
+        return;
+      }
+
+      // Send POST request to backend
+      await fetch("/users", {
+
+        method: "POST", // tells backend we are creating data
+
+        headers: {
+          "Content-Type": "application/json" // we are sending JSON
+        },
+
+        body: JSON.stringify({
+          name: name // convert JS object into JSON string
+        })
+
+      });
+
+      // Clear input after sending data
+      input.value = "";
+
+      // Reload users to show new user
+      loadUsers();
+
+    }
+
+
+    // =========================
+    // EVENT LISTENER
+    // =========================
+
+    document
+      .getElementById("addBtn")
+      .addEventListener("click", addUser);
+
+    // Load users when page opens
+    loadUsers();
+
+  </script>
+
+</body>
+
+</html>

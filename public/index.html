@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Frontend + Backend</title>
+
+    <style>
+      body {
+        font-family: Arial;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+
+      main {
+        max-width: 600px;
+        margin: auto;
+      }
+
+      section {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+      }
+
+      button {
+        padding: 10px 15px;
+        cursor: pointer;
+        margin-bottom: 20px;
+      }
+
+      li {
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main>
+      <section>
+        <h1>User Dashboard</h1>
+
+        <button id="loadBtn">Load Users</button>
+
+        <p id="status"></p>
+
+        <ul id="users"></ul>
+      </section>
+    </main>
+
+    <script>
+      async function loadUsers() {
+        const status = document.getElementById("status");
+
+        status.textContent = "Loading users...";
+
+        try {
+          // request data from backend, wait until the server responds before continuing.
+          const response = await fetch("/users");
+
+          // convert JSON to JavaScript
+          const users = await response.json(); // await --> wait until the server responds before continuing.
+
+          status.textContent = "";
+
+          const usersList = document.getElementById("users");
+
+          usersList.innerHTML = "";
+
+          // loop through users
+          users.forEach((user) => {
+            const li = document.createElement("li");
+
+            li.textContent = user.name;
+
+            usersList.appendChild(li);
+          });
+        } catch (error) {
+          status.textContent = "Failed to load users";
+        }
+      }
+
+      document.getElementById("loadBtn").addEventListener("click", loadUsers);
+    </script>
+  </body>
+</html>

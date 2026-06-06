@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <title>CRUD Users App</title>
+
+  <style>
+
+    body {
+      font-family: Arial;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    main {
+      max-width: 700px;
+      margin: auto;
+    }
+
+    section {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    input {
+      padding: 10px;
+      margin-right: 10px;
+    }
+
+    button {
+      padding: 8px 12px;
+      margin-left: 5px;
+      cursor: pointer;
+    }
+
+    li {
+      margin-bottom: 15px;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <main>
+
+    <section>
+
+      <h1>CRUD Users App</h1>
+
+      <input
+        type="text"
+        id="nameInput"
+        placeholder="Enter name"
+      />
+
+      <button id="addBtn">
+        Add User
+      </button>
+
+      <ul id="users"></ul>
+
+    </section>
+
+  </main>
+
+  <script>
+
+    // =========================
+    // LOAD USERS
+    // =========================
+
+    async function loadUsers() {
+
+      const response =
+        await fetch("/users");
+
+      const users =
+        await response.json();
+
+      const usersList =
+        document.getElementById("users");
+
+      usersList.innerHTML = "";
+
+      users.forEach(user => {
+
+        const li =
+          document.createElement("li");
+
+        li.innerHTML = `
+          ${user.name}
+
+          <button onclick="updateUser(${user.id})">
+            Edit
+          </button>
+
+          <button onclick="deleteUser(${user.id})">
+            Delete
+          </button>
+        `;
+
+        usersList.appendChild(li);
+
+      });
+
+    }
+
+
+    // =========================
+    // CREATE USER
+    // =========================
+
+    async function addUser() {
+
+      const input =
+        document.getElementById("nameInput");
+
+      const name =
+        input.value;
+
+      if (!name) {
+        return;
+      }
+
+      await fetch("/users", {
+
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          name: name
+        })
+
+      });
+
+      input.value = "";
+
+      loadUsers();
+
+    }
+
+
+    // =========================
+    // UPDATE USER
+    // =========================
+
+    async function updateUser(id) {
+
+      const newName =
+        prompt("Enter new name:");
+
+      if (!newName) {
+        return;
+      }
+      // Send PUT request to backend with new name and user id
+      await fetch(`/users/${id}`, {
+
+        method: "PUT",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          name: newName
+        })
+
+      });
+
+      loadUsers();
+
+    }
+
+
+    // =========================
+    // DELETE USER
+    // =========================
+
+    async function deleteUser(id) {
+
+      await fetch(`/users/${id}`, {
+
+        method: "DELETE"
+
+      });
+
+      loadUsers();
+
+    }
+
+
+    // add button listener
+    document
+      .getElementById("addBtn")
+      .addEventListener("click", addUser);
+
+    // initial load
+    loadUsers();
+
+  </script>
+
+</body>
+
+</html>
