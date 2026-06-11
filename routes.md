@@ -1,52 +1,65 @@
-Florist Project- Backend API plan
+Backend API plan
 
 1. Overview
-   Our project is a florist system where users can browse flowers, place orders and join community events like workshops and decorations.
-
-The backend is built using typescript and express. It handles all data between the frontend and database.
+   Our project is a floral community system where users can explore flowers, register gardens, join events, and share flower sightings with the community.
+   The backend will be built using TypeScript and Express. It will handle communication between the frontend and the MySQL database
 
 2. We are using 4 main types of routes:
 
-1. Get- to get data(read)
-1. Post- to add new data(create)
-1. Put- to upgrade data
-1. Delete- to remove dta
+3. Get - to get data (read)
+4. Post - to add new data (create)
+5. Put - to upgrade existing data
+6. Delete - to remove data
 
-1. API Routes in our project
+7. API Routes in our project
+
+Users
+
+Get/users - get all users
+Post/users - register user
+Get/users - get user details
+Put/users - update user information
+Delete/users - remove user
+
+Gardens
+
+Get /gardens - get all gardens
+Post /gardens - create a garden
+Get /gardens/ -get garden details
+Put /gardens/ - update garden information
+Delete /gardens/ - delete a garden
 
 Flowers:
 
 Get/flowers - get all flowers
-Post/flowers - add a new flowwer
+Post/flowers - add a new flower
+Get/flowers/ - get flower details
 Put/flowers/ - update flower
 Delete/flowers/ - delete flower
 
-Orders:
-
-Get/orders- get all orders
-Post/orders- create a new order
-Ger/orders/- get single order
-
 Events
 
-GET /events- get all events
-POST /events- create event
-PUT /events/- update event
-DELETE /events/ - delete event
+Get /events- get all events
+Post /events- create event
+Get/events/ - get event detail
+Put /events/- update event
+Delete /events/ - delete event
 
-Users
+Flower Sightings
 
-Post/users- register user
-Get/users - get user details
+Get/sightings - get a flower sighting
+Posts/sightings - add a flower sighting
+Get/sightings/ - get sighting detail
+Delete/sightings/ - delete a sighting
 
-Backend Structure
+4. Backend Structure
 
-The backend will use a simple Express structure where routes handle API requests and controllers manage logic. This helps keep the code organized and easy to maintain.
+The backend will use a simple Express structure where routes handle API requests and controllers manage the application logic. This structure helps keep the project organized and easy to maintain.
 
-How System works:
+5. How the system works:
 
 Frontend sends request -> Backend Processes it -> Database stores or returns data
 
-My Role:
+6. My Role:
 
 My responsibility is to design the backend API structure and explain how routes connect the frontend with the database.
