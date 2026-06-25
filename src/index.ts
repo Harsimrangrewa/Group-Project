@@ -1,20 +1,20 @@
 import express from "express";
+import cors from "cors";
+
+import usersRoutes from "./routes/usersRoutes";
+import gardensRoutes from "./routes/gardensRoutes";
+import flowersRoutes from "./routes/flowersRoutes";
+import eventsRoutes from "./routes/eventsRoutes";
+
 const app = express();
-const port = 3000;
+app.use(cors());
+app.use(express.json());
 
-app.use(express.static("public"));
+app.use("/users", usersRoutes);
+app.use("/gardens", gardensRoutes);
+app.use("/flowers", flowersRoutes);
+app.use("/events", eventsRoutes);
 
-// fake database
-const flowers = [
-  { id: 1, name: "Rose", color: "Red" },
-  { id: 2, name: "Tulip", color: "Yellow" },
-  { id: 3, name: "Daisy", color: "White" },
-];
-
-app.get("/api/flowers", (req, res) => {
-  res.json(flowers);
-});
-
-app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
+app.listen(3001, () => {
+  console.log("Server running on http://localhost:3001");
 });
