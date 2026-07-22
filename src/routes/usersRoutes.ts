@@ -18,7 +18,7 @@ router.post("/", async (req: Request, res: Response) => {
 
   const [result]: any = await pool.query(
     "INSERT INTO users (name) VALUES (?)",
-    [name]
+    [name],
   );
 
   res.status(201).json({ id: result.insertId, name });
