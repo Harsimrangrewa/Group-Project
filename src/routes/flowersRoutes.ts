@@ -3,39 +3,50 @@ import pool from "../db";
 
 const router = Router();
 
+// GET all flowers
 router.get("/", async (_req: Request, res: Response) => {
   const [rows] = await pool.query("SELECT * FROM flowers");
   res.json(rows);
 });
 
+// Post = it create a new flower
 router.post("/", async (req: Request, res: Response) => {
-  const { name, color } = req.body;
+  const { user_id, common_name, scientific_name, season, color, description } =
+    req.body;
 
-  if (!name || !color) {
-    res.status(400).json({ error: "Name and color are required" });
+  if (!user_id || !common_name) {
+    res.status(400).json({ error: "user_id and common_name are required" });
     return;
   }
 
   const [result]: any = await pool.query(
-    "INSERT INTO flowers (name, color) VALUES (?, ?)",
-    [name, color],
+    `INSERT INTO flowers 
+    (user_id, common_name, scientific_name, season, color, description)
+    VALUES (?, ?, ?, ?, ?, ?)`,
+    [user_id, common_name, scientific_name, season, color, description],
   );
 
-  res.status(201).json({ id: result.insertId, name, color });
+  res.status(201).json({
+    id: result.insertId,
+    user_id,
+    common_name,
+    scientific_name,
+    season,
+    color,
+    description,
+  });
 });
 
+// Put = it update a flower
 router.put("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { name, color } = req.body;
-
-  if (!name || !color) {
-    res.status(400).json({ error: "Name and color are required" });
-    return;
-  }
+  const { common_name, scientific_name, season, color, description } = req.body;
 
   const [result]: any = await pool.query(
-    "UPDATE flowers SET name = ?, color = ? WHERE id = ?",
-    [name, color, id],
+    `UPDATE flowers 
+     SET common_name = ?, scientific_name = ?, season = ?, color = ?, description = ?
+     WHERE id = ?`,
+    [common_name, scientific_name, season, color, description, id],
   );
 
   if (result.affectedRows === 0) {
@@ -43,9 +54,18 @@ router.put("/:id", async (req: Request, res: Response) => {
     return;
   }
 
-  res.json({ success: true, id, name, color });
+  res.json({
+    success: true,
+    id,
+    common_name,
+    scientific_name,
+    season,
+    color,
+    description,
+  });
 });
 
+// Delete = it removes a flower
 router.delete("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
 
