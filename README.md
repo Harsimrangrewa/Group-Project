@@ -1,84 +1,79 @@
-# PROG3271-Florist-Business
+# PROG3271 – Florist Business (Backend API)
 
-# Group Members: (Group 3)
+# Milestone 4 – Authentication System
 
-1. Harsimrandeep Kaur
-2. Gurleen Kaur
-3. Casim Bahadar
+# Group 2
 
-# Project Description:
+- Harsimrandeep Kaur
+- Gurleen Kaur
 
-The Florist Business a website/applcition where perople can browse flower collection and order bouquets online, customize arrangements.
+# Overview
 
-The system focuses on:
+This is the backend for our Florist Business project.  
+In Milestone 4, we added user login, registration, JWT authentication, and one protected route.  
+This backend will be used later with the frontend.
 
-1. Easy Flower browsing
-2. Online ordering
-3. Secure Checkout
+## Features
 
-Routes Usable:
-"localhost3000/browse"
-"localhost3000/order" for GET, PUT requests
-"localhost3000/checkout" for GET request
-
-# Basic frontend idea
-
-1. Header (Logo,website name)
-2. Nav (Home, Shop, About, Contact)
-3. Section(Section with flower image)
-4. Image (tags for flower bouquet images)
-5. Button (Shop now or Add to Cart)
-6. Section (Best Sellers)
-7. Section (customer reviews)
-8. Form (Contact form with name, email)
-9. Footer (contact info or social media link)
-10. Mutiple pages
-
-# Roles/Tasks breakdown
-
-1. Casim Bahadar - Jira Part
-2. Harsimrandeep Kaur - GitHub Part
-3. Gurleen Kaur - Environment Part
-
----
-
-# Milestone 3 – Backend Setup (TypeScript + Express + MySQL)
+- Register a user
+- Login and get a JWT token
+- Protected route using middleware
+- Users stored in a text file (users.txt)
+- Express server with TypeScript
 
 ## How to Run
 
-1. Install dependencies:
+1. Install packages:
    npm install
 
-2. Import the SQL file into MySQL:
-   USE garden_with_us;
+2. Make a `.env` file:
+   PORT=3001
+   JWT_SECRET=supersecretkey123
 
-3. Update MySQL credentials in src/db.ts:
-   user: "root"
-   password: "YOUR_PASSWORD"
-   database: "garden_with_us"
-
-4. Start the server:
+3. Start the server:
    npm run dev
 
-Server runs at: http://localhost:3001
+Server runs at:
+http://localhost:3001
 
----
+## Testing (Postman)
 
-## API Endpoints
+### 1. Register
 
-GET /users  
-GET /gardens  
-GET /flowers  
-GET /events
+POST  
+http://localhost:3001/auth/register
+Body:
 
----
+```json
+{
+  "username": "test",
+  "password": "1234"
+}
+2. Login
+POST
+http://localhost:3001/auth/login
+Body:
 
-## Files Included
+json
+{
+  "username": "test",
+  "password": "1234"
+}
+Copy the token. and paste in dashboard
 
-- src/index.ts
-- src/db.ts
-- src/routes/
-- garden_with_us.sql
-- package.json
-- tsconfig.json
-- README.md
+3. Protected Route
+GET
+http://localhost:3001/dashboard
+Header:
+Authorization: Bearer <token>
+
+
+# Files Included
+index.ts
+routes folder
+middleware folder
+models folder
+users.txt
+package.json
+tsconfig.json
+```
