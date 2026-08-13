@@ -1,16 +1,15 @@
 import { Router, Request, Response } from "express";
 import pool from "../db";
+import authenticateToken from "../middleware/auth";
 
 const router = Router();
 
-// Get all gardens
 router.get("/", async (_req: Request, res: Response) => {
   const [rows] = await pool.query("SELECT * FROM gardens");
   res.json(rows);
 });
 
-// Post = it create a new garden
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", authenticateToken, async (req: Request, res: Response) => {
   const { user_id, name, description, location } = req.body;
 
   if (!user_id || !name) {
@@ -33,8 +32,7 @@ router.post("/", async (req: Request, res: Response) => {
   });
 });
 
-// Put = it update a garden
-router.put("/:id", async (req: Request, res: Response) => {
+router.put("/:id", authenticateToken, async (req: Request, res: Response) => {
   const { id } = req.params;
   const { name, description, location } = req.body;
 
@@ -59,20 +57,23 @@ router.put("/:id", async (req: Request, res: Response) => {
   });
 });
 
-// Delete = it removes a garden
-router.delete("/:id", async (req: Request, res: Response) => {
-  const { id } = req.params;
+router.delete(
+  "/:id",
+  authenticateToken,
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
 
-  const [result]: any = await pool.query("DELETE FROM gardens WHERE id = ?", [
-    id,
-  ]);
+    const [result]: any = await pool.query("DELETE FROM gardens WHERE id = ?", [
+      id,
+    ]);
 
-  if (result.affectedRows === 0) {
-    res.status(404).json({ error: "Garden not found" });
-    return;
-  }
+    if (result.affectedRows === 0) {
+      res.status(404).json({ error: "Garden not found" });
+      return;
+    }
 
-  res.json({ success: true, message: `Garden ${id} deleted` });
-});
+    res.json({ success: true, message: `Garden ${id} deleted` });
+  },
+);
 
 export default router;
