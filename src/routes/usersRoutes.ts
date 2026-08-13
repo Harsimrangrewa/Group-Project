@@ -1,4 +1,5 @@
 import { Router, Request, Response } from "express";
+import bcrypt from "bcryptjs";
 import pool from "../db";
 import authenticateToken from "../middleware/auth";
 
@@ -6,10 +7,17 @@ const router = Router();
 
 router.get("/", authenticateToken, async (_req: Request, res: Response) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM users");
+    const [rows] = await pool.query(
+      "SELECT id, name, email, bio, created_at FROM users",
+    );
+
     res.status(200).json(rows);
   } catch (error) {
-    res.status(500).json({ error: "Database error" });
+    console.error("GET users error:", error);
+
+    res.status(500).json({
+      error: "Database error",
+    });
   }
 });
 
@@ -18,15 +26,18 @@ router.post("/", authenticateToken, async (req: Request, res: Response) => {
     const { name, email, password_hash, bio } = req.body;
 
     if (!name || !email || !password_hash) {
-      return res
-        .status(400)
-        .json({ error: "Name, email and password are required" });
+      return res.status(400).json({
+        error: "Name, email and password are required",
+      });
     }
 
+    const hashedPassword = await bcrypt.hash(password_hash, 10);
+
     const [result]: any = await pool.query(
-      `INSERT INTO users (name, email, password_hash, bio)
+      `INSERT INTO users
+       (name, email, password_hash, bio)
        VALUES (?, ?, ?, ?)`,
-      [name, email, password_hash, bio],
+      [name, email, hashedPassword, bio || null],
     );
 
     res.status(201).json({
@@ -36,8 +47,18 @@ router.post("/", authenticateToken, async (req: Request, res: Response) => {
       email,
       bio,
     });
-  } catch (error) {
-    res.status(500).json({ error: "Database error" });
+  } catch (error: any) {
+    console.error("POST user error:", error);
+
+    if (error?.code === "ER_DUP_ENTRY") {
+      return res.status(400).json({
+        error: "Email already exists",
+      });
+    }
+
+    res.status(500).json({
+      error: "Database error",
+    });
   }
 });
 
@@ -47,25 +68,44 @@ router.put("/:id", authenticateToken, async (req: Request, res: Response) => {
     const { name, email, password_hash, bio } = req.body;
 
     if (!name || !email || !password_hash) {
-      return res
-        .status(400)
-        .json({ error: "Name, email and password are required" });
+      return res.status(400).json({
+        error: "Name, email and password are required",
+      });
     }
+
+    const hashedPassword = await bcrypt.hash(password_hash, 10);
 
     const [result]: any = await pool.query(
       `UPDATE users
-       SET name = ?, email = ?, password_hash = ?, bio = ?
+       SET name = ?,
+           email = ?,
+           password_hash = ?,
+           bio = ?
        WHERE id = ?`,
-      [name, email, password_hash, bio, id],
+      [name, email, hashedPassword, bio || null, id],
     );
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({
+        error: "User not found",
+      });
     }
 
-    res.status(200).json({ message: "User updated successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "Database error" });
+    res.status(200).json({
+      message: "User updated successfully",
+    });
+  } catch (error: any) {
+    console.error("PUT user error:", error);
+
+    if (error?.code === "ER_DUP_ENTRY") {
+      return res.status(400).json({
+        error: "Email already exists",
+      });
+    }
+
+    res.status(500).json({
+      error: "Database error",
+    });
   }
 });
 
@@ -81,12 +121,20 @@ router.delete(
       ]);
 
       if (result.affectedRows === 0) {
-        return res.status(404).json({ error: "User not found" });
+        return res.status(404).json({
+          error: "User not found",
+        });
       }
 
-      res.status(200).json({ message: "User deleted successfully" });
+      res.status(200).json({
+        message: "User deleted successfully",
+      });
     } catch (error) {
-      res.status(500).json({ error: "Database error" });
+      console.error("DELETE user error:", error);
+
+      res.status(500).json({
+        error: "Database error",
+      });
     }
   },
 );

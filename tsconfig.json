@@ -2,13 +2,14 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-
     "module": "commonjs",
     "target": "es2020",
-
     "types": [],
     "typeRoots": ["./src/types", "./node_modules/@types"],
-
-    "esModuleInterop": true
-  }
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["frontend", "node_modules", "dist"]
 }
