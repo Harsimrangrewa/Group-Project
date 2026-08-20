@@ -22,7 +22,9 @@ function GardensPage() {
   const loadGardens = async () => {
     try {
       const res = await fetch("http://localhost:3001/gardens", {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       const data = await res.json();
@@ -52,16 +54,17 @@ function GardensPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage("");
 
     const url =
       editingId === null
         ? "http://localhost:3001/gardens"
         : `http://localhost:3001/gardens/${editingId}`;
 
+    const method = editingId === null ? "POST" : "PUT";
+
     try {
       const res = await fetch(url, {
-        method: editingId === null ? "POST" : "PUT",
+        method,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -88,7 +91,7 @@ function GardensPage() {
       );
 
       clearForm();
-      await loadGardens();
+      loadGardens();
     } catch {
       setMessage("Unable to connect to server");
     }
@@ -119,17 +122,17 @@ function GardensPage() {
       }
 
       setMessage("Garden deleted successfully");
-      await loadGardens();
+      loadGardens();
     } catch {
       setMessage("Unable to connect to server");
     }
   };
 
   return (
-    <div className="page">
+    <div>
       <h1>Gardens</h1>
 
-      <form onSubmit={handleSubmit} className="crud-form">
+      <form onSubmit={handleSubmit}>
         <input
           type="number"
           placeholder="User ID"
@@ -168,23 +171,24 @@ function GardensPage() {
         )}
       </form>
 
-      {message && <p className="message">{message}</p>}
+      {message && <p>{message}</p>}
 
-      <div className="cards">
-        {gardens.map((garden) => (
-          <div className="card" key={garden.id}>
-            <h3>{garden.name}</h3>
-            <p>User ID: {garden.user_id}</p>
-            <p>{garden.description || "No description"}</p>
-            <p>{garden.location || "No location"}</p>
+      <hr />
 
-            <div className="actions">
-              <button onClick={() => editGarden(garden)}>Edit</button>
-              <button onClick={() => deleteGarden(garden.id)}>Delete</button>
-            </div>
-          </div>
-        ))}
-      </div>
+      {gardens.map((garden) => (
+        <div key={garden.id}>
+          <h3>{garden.name}</h3>
+          <p>User ID: {garden.user_id}</p>
+          <p>{garden.description}</p>
+          <p>{garden.location}</p>
+
+          <button onClick={() => editGarden(garden)}>Edit</button>
+
+          <button onClick={() => deleteGarden(garden.id)}>Delete</button>
+
+          <hr />
+        </div>
+      ))}
     </div>
   );
 }
